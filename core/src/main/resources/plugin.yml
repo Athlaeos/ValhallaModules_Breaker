@@ -1,0 +1,19 @@
+name: vModules_Breaker
+version: ${project.version}
+main: me.athlaeos.vbreaking.ValhallaModulesBreaker
+author: Athlaeos
+api-version: "1.16"
+load: POSTWORLD
+softdepend:
+- WorldEdit
+- WorldGuard
+- PlaceholderAPI
+commands:
+  vbreaking:
+    description: "The main command to access the plugin's features"
+    aliases: [vb]
+
+permissions:
+  vbreaker.vb:
+    default: op
+    description: "Allows access to /vbreaking"
