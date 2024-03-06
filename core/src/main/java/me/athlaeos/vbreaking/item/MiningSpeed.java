@@ -173,16 +173,18 @@ public class MiningSpeed {
     }
 
     public static Map<Material, Material> getHardnessTranslations(Player p, ItemMeta m){
-        String stored = ItemUtils.getPDCString(HARDNESS_TRANSLATIONS, m, "");
         Map<Material, Material> translations = new HashMap<>();
-        if (!stored.isEmpty()){
-            for (String exceptionString : stored.split(";")){
-                String[] args = exceptionString.split(":");
-                try {
-                    Material b = Material.valueOf(args[0]);
-                    Material t = Material.valueOf(args[1]);
-                    translations.put(b, t);
-                } catch (IllegalArgumentException ignored){}
+        if (m != null){
+            String stored = ItemUtils.getPDCString(HARDNESS_TRANSLATIONS, m, "");
+            if (!stored.isEmpty()){
+                for (String exceptionString : stored.split(";")){
+                    String[] args = exceptionString.split(":");
+                    try {
+                        Material b = Material.valueOf(args[0]);
+                        Material t = Material.valueOf(args[1]);
+                        translations.put(b, t);
+                    } catch (IllegalArgumentException ignored){}
+                }
             }
         }
         if (p != null) {

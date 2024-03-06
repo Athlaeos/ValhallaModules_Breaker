@@ -73,10 +73,10 @@ public class BlockUtils {
         float hardness = tool == null ? BlockUtils.getHardness(b) : MiningSpeed.getHardness(digger, tool.getMeta(), b);
         if (hardness < 0 || hardness > 100000) return 0;
         EntityProperties properties = EntityCache.getAndCacheProperties(digger);
-        Map<Material, Material> hardnessTranslations = tool == null ? new HashMap<>() : MiningSpeed.getHardnessTranslations(digger, tool.getMeta());
+        Map<Material, Material> hardnessTranslations = MiningSpeed.getHardnessTranslations(digger, tool == null ? null : tool.getMeta());
         // changing tool power to be equal to that if the tool mined a different type of block
         float toolStrength = !hardnessTranslations.isEmpty() && hardnessTranslations.containsKey(b.getType()) ?
-                ValhallaModulesBreaker.getNms().toolPower(tool.getItem(), hardnessTranslations.get(b.getType())) :
+                ValhallaModulesBreaker.getNms().toolPower(tool == null ? null : tool.getItem(), hardnessTranslations.get(b.getType())) :
                 ValhallaModulesBreaker.getNms().toolPower(tool == null ? null : tool.getItem(), b);
 
         boolean canHarvest = BlockUtils.hasDrops(b, digger, tool == null ? null : tool.getItem());
