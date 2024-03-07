@@ -30,14 +30,14 @@
 
 
 
-Tool power:
+Tool power:<br>
 
-Wooden tools: 2
-Stone tools: 4
-Iron tools: 6
-Diamond tools: 8
-Netherite tools: 9
-Golden tools: 12
+Wooden tools: 2<br>
+Stone tools: 4<br>
+Iron tools: 6<br>
+Diamond tools: 8<br>
+Netherite tools: 9<br>
+Golden tools: 12<br>
 
 ```
 /vb give <tool>
