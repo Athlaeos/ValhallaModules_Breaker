@@ -39,8 +39,15 @@ Diamond tools: 8
 Netherite tools: 9
 Golden tools: 12
 
+```
+/vb give <tool>
+```
+- Gives you a custom tool special to the plugin. By default, there's only a stick that allows you to control the hardness of specific blocks
 
-
+```
+/vb hardness <block> <value>
+```
+- Changes the default hardness of the given block to the given value
 
 
 
