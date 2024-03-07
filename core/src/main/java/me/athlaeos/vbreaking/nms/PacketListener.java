@@ -53,14 +53,14 @@ public class PacketListener implements Listener {
 
         Channel channel = ValhallaModulesBreaker.getNms().channel(p);
         channels.put(p.getUniqueId(), channel);
-        channel.pipeline().addBefore("packet_handler", "valhalla_" + p.getUniqueId(), duplexHandler);
+        channel.pipeline().addBefore("packet_handler", "vbreaker_" + p.getUniqueId(), duplexHandler);
     }
 
     public void closeChannel(Player p){
         Channel channel = channels.get(p.getUniqueId());
         if (channel == null) return;
         channel.eventLoop().submit(() -> {
-            channel.pipeline().remove("valhalla_" + p.getUniqueId());
+            channel.pipeline().remove("vbreaker_" + p.getUniqueId());
             return null;
         });
     }

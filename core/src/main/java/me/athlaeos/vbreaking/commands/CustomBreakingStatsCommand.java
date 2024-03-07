@@ -1,5 +1,6 @@
 package me.athlaeos.vbreaking.commands;
 
+import me.athlaeos.vbreaking.configuration.ConfigManager;
 import me.athlaeos.vbreaking.item.MiningSpeed;
 import me.athlaeos.vbreaking.playerstats.PlayerProfile;
 import me.athlaeos.vbreaking.playerstats.PlayerProfileManager;
@@ -261,34 +262,60 @@ public class CustomBreakingStatsCommand implements TabExecutor {
 				p.getInventory().addItem(item.clone());
 				p.sendMessage(Utils.chat("&aItem granted!"));
 				return true;
+			} else if (args[1].equalsIgnoreCase("hardness")){
+				Float hardness = null;
+				if (args.length > 2) {
+					hardness = Catch.catchOrElse(() -> Float.parseFloat(args[2]), null);
+					if (hardness == null){
+						sender.sendMessage(Utils.chat("&cInvalid number"));
+						return true;
+					} else hardness = Math.max(-1, hardness);
+				}
+
+				Material block = Catch.catchOrElse(() -> Material.valueOf(args[1]), null);
+				if (block == null || !block.isBlock()) {
+					sender.sendMessage(Utils.chat("&cInvalid block material"));
+					return true;
+				}
+
+				ConfigManager.getConfig("default_block_hardnesses.yml").set(args[1], hardness);
+				ConfigManager.getConfig("default_block_hardnesses.yml").save();
+				ConfigManager.getConfig("default_block_hardnesses.yml").reload();
+				BlockUtils.setDefaultHardness(block, hardness);
+
+				if (hardness == null) sender.sendMessage(Utils.chat("&cBlock %block% no longer has a custom hardness".replace("%block%", args[1])));
+				else sender.sendMessage(Utils.chat("&cBlock %block% now has a custom hardness of %hardness%".replace("%block%", args[1]).replace("%hardness%", args[2])));
+				return true;
 			}
 		} else {
 			sender.sendMessage(Utils.chat("&e/vbreaking <arg>"));
 			sender.sendMessage(Utils.chat("&e        give <tool>"));
 			sender.sendMessage(Utils.chat("&8        > Gives you a special plugin tool, the plugin currently only offers a stick allowing you to change the hardness of individual blocks"));
-			sender.sendMessage(Utils.chat("&6        stats"));
-			sender.sendMessage(Utils.chat("&6            item"));
-			sender.sendMessage(Utils.chat("&6                mining_power <value>"));
-			sender.sendMessage(Utils.chat("&8                > Changes the base mining power of the held item"));
-			sender.sendMessage(Utils.chat("&6                mining_power_exception <block> <value>"));
-			sender.sendMessage(Utils.chat("&8                > Changes the base mining power of the held item against a specific block type"));
-			sender.sendMessage(Utils.chat("&6                mining_speed_bonus <value>"));
-			sender.sendMessage(Utils.chat("&8                > Changes the mining speed bonus of the held item"));
-			sender.sendMessage(Utils.chat("&6                hardness_translation <from> <to>"));
-			sender.sendMessage(Utils.chat("&8                > Makes the held item mine &7from&8 blocks with the same speed as if it was mining &7to&8 blocks"));
-			sender.sendMessage(Utils.chat("&6            player"));
-			sender.sendMessage(Utils.chat("&6                mining_speed_bonus <players> [add/set] <value>"));
-			sender.sendMessage(Utils.chat("&8                > Grants the given players additional (or reduced) mining speed"));
-			sender.sendMessage(Utils.chat("&6                mining_speed_bonus_exception <players> [add/set] <block> <value>"));
-			sender.sendMessage(Utils.chat("&8                > Grants the given players additional (or reduced) mining speed against the specific block"));
-			sender.sendMessage(Utils.chat("&6                hardness_translation <players> <from> <to>"));
-			sender.sendMessage(Utils.chat("&8                > Allows players to mine &7from&8 blocks with the same speed as if they were mining &7to&8 blocks"));
-			sender.sendMessage(Utils.chat("&6                empty_hand_tool <players> <value>"));
-			sender.sendMessage(Utils.chat("&8                > Allows players to mine blocks with the empty hand as if they were holding the given tool"));
-			sender.sendMessage(Utils.chat("&6                aquaaffinity <players> <value>"));
-			sender.sendMessage(Utils.chat("&8                > Allows players to mine at normal speeds, even if in water"));
-			sender.sendMessage(Utils.chat("&6                airaffinity <players> <value>"));
-			sender.sendMessage(Utils.chat("&8                > Allows players to mine at normal speeds, even if not on solid ground"));
+			sender.sendMessage(Utils.chat("&6        hardness <block> <hardness>"));
+			sender.sendMessage(Utils.chat("&8        > Changes (or removes) the default hardness of the given block"));
+			sender.sendMessage(Utils.chat("&e        stats"));
+			sender.sendMessage(Utils.chat("&e            item"));
+			sender.sendMessage(Utils.chat("&e                mining_power <value>"));
+			sender.sendMessage(Utils.chat("&e                > Changes the base mining power of the held item"));
+			sender.sendMessage(Utils.chat("&e                mining_power_exception <block> <value>"));
+			sender.sendMessage(Utils.chat("&e                > Changes the base mining power of the held item against a specific block type"));
+			sender.sendMessage(Utils.chat("&e                mining_speed_bonus <value>"));
+			sender.sendMessage(Utils.chat("&e                > Changes the mining speed bonus of the held item"));
+			sender.sendMessage(Utils.chat("&e                hardness_translation <from> <to>"));
+			sender.sendMessage(Utils.chat("&e                > Makes the held item mine &7from&8 blocks with the same speed as if it was mining &7to&8 blocks"));
+			sender.sendMessage(Utils.chat("&e            player"));
+			sender.sendMessage(Utils.chat("&e                mining_speed_bonus <players> [add/set] <value>"));
+			sender.sendMessage(Utils.chat("&e                > Grants the given players additional (or reduced) mining speed"));
+			sender.sendMessage(Utils.chat("&e                mining_speed_bonus_exception <players> [add/set] <block> <value>"));
+			sender.sendMessage(Utils.chat("&e                > Grants the given players additional (or reduced) mining speed against the specific block"));
+			sender.sendMessage(Utils.chat("&e                hardness_translation <players> <from> <to>"));
+			sender.sendMessage(Utils.chat("&e                > Allows players to mine &7from&8 blocks with the same speed as if they were mining &7to&8 blocks"));
+			sender.sendMessage(Utils.chat("&e                empty_hand_tool <players> <value>"));
+			sender.sendMessage(Utils.chat("&e                > Allows players to mine blocks with the empty hand as if they were holding the given tool"));
+			sender.sendMessage(Utils.chat("&e                aquaaffinity <players> <value>"));
+			sender.sendMessage(Utils.chat("&e                > Allows players to mine at normal speeds, even if in water"));
+			sender.sendMessage(Utils.chat("&e                airaffinity <players> <value>"));
+			sender.sendMessage(Utils.chat("&e                > Allows players to mine at normal speeds, even if not on solid ground"));
 		}
 		return false;
 	}

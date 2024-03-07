@@ -2,6 +2,7 @@ package me.athlaeos.vbreaking.utility;
 
 import com.jeff_media.customblockdata.CustomBlockData;
 import me.athlaeos.vbreaking.ValhallaModulesBreaker;
+import me.athlaeos.vbreaking.configuration.ConfigManager;
 import me.athlaeos.vbreaking.item.ItemBuilder;
 import me.athlaeos.vbreaking.item.MiningSpeed;
 import me.athlaeos.vbreaking.listeners.CustomBreakSpeedListener;
@@ -13,6 +14,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -28,14 +31,32 @@ import java.util.*;
 public class BlockUtils {
     private static final NamespacedKey CUSTOM_HARDNESS = new NamespacedKey(ValhallaModulesBreaker.getInstance(), "custom_hardness");
 
+    private static final Map<Material, Float> customBlockHardnesses = new HashMap<>();
+    static {
+        YamlConfiguration config = ConfigManager.getConfig("default_block_hardnesses.yml").get();
+        ConfigurationSection section = config.getConfigurationSection("");
+        if (section != null){
+            for (String material : section.getKeys(false)){
+                Material block = Catch.catchOrElse(() -> Material.valueOf(material), null);
+                if (block == null) ValhallaModulesBreaker.logWarning("Material in default_block_hardnesses.yml is invalid: " + material);
+                else customBlockHardnesses.put(block, (float) config.getDouble(material));
+            }
+        }
+    }
+
     public static void setCustomHardness(Block b, float hardness){
         PersistentDataContainer customBlockData = new CustomBlockData(b, ValhallaModulesBreaker.getInstance());
         customBlockData.set(CUSTOM_HARDNESS, PersistentDataType.FLOAT, hardness);
     }
 
+    public static void setDefaultHardness(Material m, Float hardness){
+        if (hardness == null) customBlockHardnesses.remove(m);
+        else customBlockHardnesses.put(m, hardness);
+    }
+
     public static float getHardness(Block b){
         PersistentDataContainer customBlockData = new CustomBlockData(b, ValhallaModulesBreaker.getInstance());
-        return customBlockData.getOrDefault(CUSTOM_HARDNESS, PersistentDataType.FLOAT, b.getType().getHardness());
+        return customBlockData.getOrDefault(CUSTOM_HARDNESS, PersistentDataType.FLOAT, customBlockHardnesses.getOrDefault(b.getType(), b.getType().getHardness()));
     }
 
     public static boolean hasCustomHardness(Block b){

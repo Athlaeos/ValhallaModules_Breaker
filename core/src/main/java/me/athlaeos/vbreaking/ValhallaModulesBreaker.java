@@ -42,6 +42,7 @@ public class ValhallaModulesBreaker extends JavaPlugin {
     public void onLoad() {
         // save and update configs
         pluginConfig = saveAndUpdateConfig("config.yml");
+        saveConfig("default_block_hardnesses.yml");
 
         registerHook(new PAPIHook());
         registerHook(new WorldGuardHook());
@@ -49,6 +50,12 @@ public class ValhallaModulesBreaker extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        if (getServer().getPluginManager().getPlugin("ValhallMMO") != null){
+            getServer().getPluginManager().disablePlugin(this);
+            logWarning("ValhallaMMO already found, disabling plugin");
+            return;
+        }
+
         if (setupNMS()){
             packetListener = new PacketListener(new BlockBreakNetworkHandlerImpl());
             packetListener.addAll();
